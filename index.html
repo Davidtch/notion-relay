@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Relay vers Notion</title>
+</head>
+<body>
+  <h2>📡 Relay vers Notion</h2>
+  <script>
+    window.addEventListener("message", async (event) => {
+      if (!event.data || !event.data.title || !event.data.url) return;
+
+      try {
+        const response = await fetch("https://notion-proxy-09f3.onrender.com/notion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            title: event.data.title,
+            url: event.data.url
+          })
+        });
+
+        const result = await response.json();
+        alert(result.ok ? "✅ Notion mis à jour !" : "❌ Erreur : " + JSON.stringify(result.error));
+      } catch (err) {
+        alert("Erreur réseau : " + err.message);
+      }
+    }, false);
+  </script>
+</body>
+</html>
