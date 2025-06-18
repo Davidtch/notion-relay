@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const fetch = require('node-fetch');
 const dotenv = require('dotenv');
@@ -6,9 +5,7 @@ const bodyParser = require('body-parser');
 
 dotenv.config();
 const app = express();
-
 const port = process.env.PORT || 3000;
-console.log('PORT from env:', process.env.PORT);
 
 app.use(bodyParser.json());
 
@@ -17,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/notion', async (req, res) => {
-  const { title, url } = req.body;
+  const { title, url, content } = req.body;
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
@@ -41,6 +38,15 @@ app.post('/notion', async (req, res) => {
           },
           "Lien": {
             url: url || "https://chat.openai.com"
+          },
+          "Contenu": {
+            rich_text: [
+              {
+                text: {
+                  content: content || ""
+                }
+              }
+            ]
           }
         }
       })
