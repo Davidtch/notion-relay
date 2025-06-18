@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/notion', async (req, res) => {
-  const { title, url, blocks } = req.body;
+  const { title, url, blocks, tags } = req.body;
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
@@ -37,7 +37,10 @@ app.post('/notion', async (req, res) => {
           },
           "Lien": {
             url: url || "https://chat.openai.com"
-          }
+          },
+          "Tags": tags ? {
+            multi_select: tags.map(tag => ({ name: tag }))
+          } : undefined
         },
         children: Array.isArray(blocks) ? blocks : []
       })
