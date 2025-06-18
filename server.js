@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 dotenv.config();
 const app = express();
 
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 3000;
 console.log('PORT from env:', process.env.PORT);
 
 app.use(bodyParser.json());
