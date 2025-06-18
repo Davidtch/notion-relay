@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const fetch = require('node-fetch');
 const dotenv = require('dotenv');
@@ -7,14 +8,16 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+console.log("PORT from env:", port);
+
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('Proxy Notion fonctionnel');
+  res.send('✅ Proxy Notion opérationnel');
 });
 
 app.post('/notion', async (req, res) => {
-  const { title, url, content } = req.body;
+  const { title, url, blocks } = req.body;
 
   try {
     const response = await fetch("https://api.notion.com/v1/pages", {
@@ -28,34 +31,15 @@ app.post('/notion', async (req, res) => {
         parent: { database_id: process.env.NOTION_DATABASE_ID },
         properties: {
           "Titre": {
-            title: [
-              {
-                text: {
-                  content: title || "Sans titre"
-                }
-              }
-            ]
+            title: [{
+              text: { content: title || "Sans titre" }
+            }]
           },
           "Lien": {
             url: url || "https://chat.openai.com"
           }
         },
-        children: [
-          {
-            object: "block",
-            type: "paragraph",
-            paragraph: {
-              rich_text: [
-                {
-                  type: "text",
-                  text: {
-                    content: content || "Aucun message capturé."
-                  }
-                }
-              ]
-            }
-          }
-        ]
+        children: Array.isArray(blocks) ? blocks : []
       })
     });
 
@@ -64,11 +48,11 @@ app.post('/notion', async (req, res) => {
     if (response.ok) {
       res.status(200).json({ ok: true, data });
     } else {
-      console.error("Erreur API Notion :", data);
+      console.error("❌ Erreur API Notion :", data);
       res.status(500).json({ ok: false, error: data });
     }
   } catch (err) {
-    console.error("Erreur serveur :", err);
+    console.error("❌ Erreur serveur :", err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
