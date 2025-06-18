@@ -38,17 +38,24 @@ app.post('/notion', async (req, res) => {
           },
           "Lien": {
             url: url || "https://chat.openai.com"
-          },
-          "Contenu": {
-            rich_text: [
-              {
-                text: {
-                  content: content || ""
-                }
-              }
-            ]
           }
-        }
+        },
+        children: [
+          {
+            object: "block",
+            type: "paragraph",
+            paragraph: {
+              rich_text: [
+                {
+                  type: "text",
+                  text: {
+                    content: content || "Aucun message capturé."
+                  }
+                }
+              ]
+            }
+          }
+        ]
       })
     });
 
