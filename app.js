@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post('/notion-proxy', async (req, res) => {
+app.post('/notion', async (req, res) => {
   try {
     const notionResponse = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
