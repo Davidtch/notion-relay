@@ -7,13 +7,22 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Utiliser cors() avec configuration par défaut (autorise toutes les origines)
-app.use(cors());
+// Configuration CORS très permissive (adapter si besoin)
+app.use(cors({
+  origin: 'https://docs.google.com',  // ou '*' pour autoriser tout le monde
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
 
-// Pour parser le JSON dans les requêtes POST
+// Middleware pour gérer OPTIONS (préflight)
+app.options('*', (req, res) => {
+  res.sendStatus(204);
+});
+
 app.use(bodyParser.json());
 
-// Ta route proxy Notion
 app.post('/notion', async (req, res) => {
   try {
     const notionResponse = await fetch('https://api.notion.com/v1/pages', {
