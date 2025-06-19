@@ -7,19 +7,12 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuration CORS très permissive (adapter si besoin)
 app.use(cors({
-  origin: 'https://docs.google.com',  // ou '*' pour autoriser tout le monde
+  origin: 'https://docs.google.com', // Change si tu veux autoriser d'autres origines
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 200
 }));
-
-// Middleware pour gérer OPTIONS (préflight)
-app.options('*', (req, res) => {
-  res.sendStatus(204);
-});
 
 app.use(bodyParser.json());
 
