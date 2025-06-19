@@ -1,73 +1,41 @@
-// app.js
-import express from 'express';
-import cors from 'cors';
-import fetch from 'node-fetch';
+require('dotenv').config();
+const express = require('express');
+const fetch = require('node-fetch');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors()); // Autorise toutes origines - à sécuriser plus tard si besoin
-app.use(express.json());
+app.use(cors()); // Active CORS pour toutes les routes
+app.use(bodyParser.json());
 
-app.post('/notion', async (req, res) => {
+// Route proxy pour envoyer les données vers Notion
+app.post('/notion-proxy', async (req, res) => {
   try {
-    const { notionToken, databaseId, title, content } = req.body;
-
-    if (!notionToken || !databaseId || !title || !content) {
-      return res.status(400).json({ error: 'Missing parameters' });
-    }
-
     const notionResponse = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${notionToken}`,
-        'Notion-Version': '2022-06-28',
+        'Authorization': `Bearer ${process.env.NOTION_API_KEY}`,
         'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28'
       },
-      body: JSON.stringify({
-        parent: { database_id: databaseId },
-        properties: {
-          Title: {
-            title: [
-              {
-                text: {
-                  content: title,
-                },
-              },
-            ],
-          },
-        },
-        children: [
-          {
-            object: 'block',
-            type: 'paragraph',
-            paragraph: {
-              text: [
-                {
-                  type: 'text',
-                  text: {
-                    content: content,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      }),
+      body: JSON.stringify(req.body)
     });
 
     if (!notionResponse.ok) {
       const errorText = await notionResponse.text();
-      return res.status(notionResponse.status).json({ error: errorText });
+      return res.status(notionResponse.status).send(errorText);
     }
 
     const data = await notionResponse.json();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Erreur lors de l’appel à Notion:', error);
+    res.status(500).send('Erreur interne du serveur');
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
