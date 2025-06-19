@@ -1,3 +1,9 @@
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // ou mets ici ton domaine spécifique
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
