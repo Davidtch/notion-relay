@@ -1,21 +1,3 @@
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // ou mets ici ton domaine spécifique
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // ou 'https://docs.google.com'
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200); // Gérer les requêtes de prévol
-  }
-  next();
-});
-
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -25,9 +7,13 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Utiliser cors() avec configuration par défaut (autorise toutes les origines)
 app.use(cors());
+
+// Pour parser le JSON dans les requêtes POST
 app.use(bodyParser.json());
 
+// Ta route proxy Notion
 app.post('/notion', async (req, res) => {
   try {
     const notionResponse = await fetch('https://api.notion.com/v1/pages', {
